@@ -52,8 +52,6 @@ pnpm dev
 npm run dev
 # or
 yarn dev
-# or
-bun dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -73,18 +71,15 @@ Example usage:
 ```tsx
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import { SourceHanSansNormal, SourceHanSansBold } from '@/fonts';
+
+// Import font definition files
+import "@/fonts/SourceHanSans-normal.js";
+import "@/fonts/SourceHanSans-bold.js";
 
 // Create a new PDF document
 const generatePDF = () => {
   // Initialize with a font supporting CJK characters
   const doc = new jsPDF();
-  
-  // Add font for CJK character support
-  doc.addFileToVFS('SourceHanSans-normal.ttf', SourceHanSansNormal);
-  doc.addFont('SourceHanSans-normal.ttf', 'SourceHanSans', 'normal');
-  doc.addFileToVFS('SourceHanSans-bold.ttf', SourceHanSansBold);
-  doc.addFont('SourceHanSans-bold.ttf', 'SourceHanSans', 'bold');
   
   // Set the font
   doc.setFont('SourceHanSans');
@@ -213,17 +208,16 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { Document, Page } from 'react-pdf';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { SourceHanSansNormal } from '@/fonts';
+
+// Import font definition files
+import "@/fonts/SourceHanSans-normal.js";
+import "@/fonts/SourceHanSans-bold.js";
 
 const PDFWorkflow = () => {
   const [pdfBlob, setPdfBlob] = useState(null);
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    
-    // Add font for CJK character support
-    doc.addFileToVFS('SourceHanSans-normal.ttf', SourceHanSansNormal);
-    doc.addFont('SourceHanSans-normal.ttf', 'SourceHanSans', 'normal');
     
     // Set the font
     doc.setFont('SourceHanSans');
@@ -272,7 +266,7 @@ const PDFWorkflow = () => {
 For CJK (Chinese, Japanese, Korean) support, this project includes:
 
 1. Pre-processed font files in JavaScript format (in the `src/fonts` directory)
-2. Font registration mechanism for jsPDF
+2. Direct imports of the font files (no need for explicit VFS loading)
 
 This approach ensures proper display of CJK characters in the generated PDFs without requiring server-side processing.
 
@@ -291,13 +285,14 @@ To ensure proper loading of the PDF.js worker:
 ### Common Issues
 
 1. **PDF Font Issues**
-   - Ensure the font files are properly imported
+   - Make sure the font JavaScript files are correctly imported
    - Verify the correct font names are used in `setFont` calls
-   - Check that font paths are correctly set
+   - Check for any console errors related to font loading
 
 2. **PDF Worker Not Found**
-   - Make sure the PDF.js worker file is in the public directory
+   - Ensure the PDF.js worker file is in the public directory
    - Verify the worker path is correctly set in your code
+   - Try using an absolute path if relative paths aren't working
 
 3. **PDF Generation Performance**
    - Large tables or complex content may cause performance issues
@@ -307,6 +302,12 @@ To ensure proper loading of the PDF.js worker:
 4. **PDF Viewing on Mobile**
    - Test the zoom-pan-pinch functionality on various devices
    - Add responsive design considerations for mobile viewports
+   - Ensure touch controls are properly handled
+
+5. **Multilingual Text Issues**
+   - If CJK characters are not displaying properly, ensure font imports are correct
+   - Check that the font name matches exactly in `setFont` calls
+   - Try using a different encoding if necessary
 
 ## 📚 Resources
 
@@ -327,6 +328,9 @@ This project is MIT licensed - see the LICENSE file for details.
 3. Add PDF annotation features
 4. Create more comprehensive examples for different use cases
 5. Add automated tests for PDF generation and viewing workflows
+6. Support for more complex layouts and styling
+7. Integration with data sources and APIs
+8. PDF password protection and security features
 
 ## 🙏 Contributions
 
@@ -334,4 +338,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-Built with ❤️ using Next.js, jsPDF, react-pdf, and react-zoom-pan-pinch.
+Built with ❤️ using Next.js 15, React 19, jsPDF, react-pdf, and react-zoom-pan-pinch.
