@@ -1,29 +1,29 @@
 # Next.js PDF Generation & Viewing Solution
 
-This project provides a comprehensive solution for PDF generation and viewing in web applications using Next.js. It integrates multiple libraries to solve common challenges in client-side PDF handling, including multilingual support, table generation, viewing, and interactive features.
+A comprehensive solution for PDF generation and viewing in web applications using Next.js. This project integrates jsPDF, jsPDF-AutoTable, react-pdf, and react-zoom-pan-pinch to provide a reliable, feature-rich PDF workflow with CJK language support.
 
 ![Screenshot](docs/images/screenshot.png)
 
-## 🔥 Features
+## 🔥 Key Features
 
-- **PDF Generation** with jsPDF and jsPDF-AutoTable
-- **Multilingual Support** with embedded CJK fonts (Source Han Sans)
-- **PDF Viewing** with react-pdf
-- **Interactive Features** like zoom, pan, and pinch with react-zoom-pan-pinch
+- **Best-in-class Table Generation** with jsPDF-AutoTable - handles automatic table wrapping, pagination, and styling
+- **Full Multilingual Support** with embedded CJK fonts (Source Han Sans)
+- **All-in-One Workflow:** Generate, preview, zoom, and interact with PDFs in a single solution
+- **Interactive Controls** for zoom, pan, and pinch with react-zoom-pan-pinch
 - **Modern UI** built with Next.js 15 and React 19
 - **TypeScript Support** for improved development experience
 
-## 🚀 Why This Project Exists
+## 🚀 Why This Solution Is Superior
 
-Creating and viewing PDFs in web applications presents several challenges:
+While many PDF solutions exist for web applications, this project addresses critical challenges that others don't:
 
-1. **Font embedding** for multilingual support (especially CJK languages)
-2. **Table generation** with proper formatting
-3. **PDF viewing** directly in the browser
-4. **Interactive controls** for better user experience
-5. **Client-side generation** without server dependencies
+1. **Reliable Table Rendering** - jsPDF-AutoTable is the most robust solution for PDF tables, avoiding the common bugs and rendering issues found in alternatives
+2. **Automatic Table Pagination** - Tables automatically wrap and paginate without requiring manual height calculations
+3. **Seamless CJK Support** - Properly handles Chinese, Japanese, and Korean characters without font issues
+4. **Preview + Generation** - Generate and preview in the same workflow - no need to download PDFs to view them
+5. **Client-side Only** - No server dependencies required for PDF operations
 
-This project offers a clean integration of multiple libraries to solve these problems in a modern Next.js application.
+This integration offers an optimal solution that avoids the "thousand strange bugs" often encountered with other approaches, which frequently require manual component height measurements to properly position content.
 
 ## 📋 Prerequisites
 
@@ -58,15 +58,17 @@ yarn dev
 
 4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🧩 Key Components
+## 🧩 Core Components
 
-### PDF Generation with jsPDF and AutoTable
+### PDF Generation with jsPDF-AutoTable - Reliable Table Generation
 
-This project includes pre-configured jsPDF setup with:
+The integration with jsPDF-AutoTable provides several critical advantages:
 
-- Font embedding for multilingual support
-- Table generation via jspdf-autotable
-- Styling and formatting utilities
+- **Automatic Pagination** - Tables automatically break across pages when content exceeds page height
+- **Consistent Styling** - Tables maintain consistent style and structure across page breaks
+- **Cell Spanning** - Support for rowspan and colspan
+- **Text Wrapping** - Content automatically wraps within cells to fit constraints
+- **Customizable Styles** - Full control over fonts, colors, borders, and spacing
 
 Example usage:
 
@@ -89,17 +91,20 @@ const generatePDF = () => {
   // Add content
   doc.text('Hello World - 你好，世界 - こんにちは世界', 10, 10);
   
-  // Add a table
+  // Add a table with automatic wrapping and pagination
   doc.autoTable({
-    head: [['Name', '名称', 'Price']],
+    head: [['Name', '名称', 'Price', 'Description']],
     body: [
-      ['Product A', '产品A', '$10.00'],
-      ['Product B', '产品B', '$20.00'],
-      ['Product C', '产品C', '$30.00'],
+      ['Product A', '产品A', '$10.00', 'This is a description that will automatically wrap if it becomes too long for the cell width'],
+      ['Product B', '产品B', '$20.00', 'Another description that will wrap properly when needed'],
+      ['Product C', '产品C', '$30.00', 'Third product with automatic text wrapping capabilities'],
+      // Add more rows to demonstrate pagination
+      ...Array(50).fill().map((_, i) => [`Item ${i+4}`, `项目${i+4}`, `$${(i+4)*10}.00`, 'Automatically paginated content'])
     ],
     styles: {
       font: 'SourceHanSans',
       fontStyle: 'normal',
+      overflow: 'linebreak', // Enable text wrapping
     },
     headStyles: {
       fontStyle: 'bold',
@@ -113,7 +118,7 @@ const generatePDF = () => {
 
 ### PDF Viewing with react-pdf
 
-The project includes a PDF viewer component using react-pdf:
+The integrated PDF viewer component allows users to view generated PDFs directly in the browser:
 
 ```tsx
 import { useState } from 'react';
@@ -198,11 +203,9 @@ const InteractivePDFViewer = ({ url }) => {
 };
 ```
 
-## 🧠 Advanced Usage
+## 🧠 Complete Workflow Example
 
-### Combining Generation and Viewing
-
-Create a complete PDF workflow where users can generate and then immediately view PDFs:
+Create a complete PDF workflow where users can generate and then immediately view PDFs with all features enabled:
 
 ```tsx
 import { useState } from 'react';
@@ -227,6 +230,29 @@ const PDFWorkflow = () => {
     // Add content
     doc.text('Generated PDF with CJK Support - 中文支持', 10, 10);
     
+    // Add table with automatic pagination
+    doc.autoTable({
+      head: [['ID', 'Name', 'Description', 'Price']],
+      body: Array(50).fill().map((_, i) => [
+        i + 1,
+        `Product ${i + 1}`,
+        `This is product ${i + 1} with a lengthy description that demonstrates automatic text wrapping within table cells. The content will properly wrap to fit the available width.`,
+        `$${(i + 1) * 10.99}`
+      ]),
+      styles: {
+        font: 'SourceHanSans',
+        overflow: 'linebreak' // Enable text wrapping
+      },
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240]
+      }
+    });
+    
     // Create a blob from the PDF
     const blob = doc.output('blob');
     setPdfBlob(blob);
@@ -234,17 +260,38 @@ const PDFWorkflow = () => {
 
   return (
     <div className="pdf-workflow">
-      <button onClick={generatePDF}>Generate PDF</button>
+      <button
+        onClick={generatePDF}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Generate PDF with Tables
+      </button>
       
       {pdfBlob && (
-        <div className="pdf-viewer">
+        <div className="pdf-viewer mt-8 border rounded p-4">
+          <h2 className="text-xl font-bold mb-4">PDF Preview</h2>
           <TransformWrapper>
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
-                <div className="tools">
-                  <button onClick={() => zoomIn()}>+</button>
-                  <button onClick={() => zoomOut()}>-</button>
-                  <button onClick={() => resetTransform()}>Reset</button>
+                <div className="tools mb-4 flex gap-2">
+                  <button
+                    className="px-3 py-1 bg-gray-200 rounded"
+                    onClick={() => zoomIn()}
+                  >
+                    +
+                  </button>
+                  <button
+                    className="px-3 py-1 bg-gray-200 rounded"
+                    onClick={() => zoomOut()}
+                  >
+                    -
+                  </button>
+                  <button
+                    className="px-3 py-1 bg-gray-200 rounded"
+                    onClick={() => resetTransform()}
+                  >
+                    Reset
+                  </button>
                 </div>
                 <TransformComponent>
                   <Document file={pdfBlob}>
@@ -261,7 +308,19 @@ const PDFWorkflow = () => {
 };
 ```
 
-## 📝 Implementation Notes
+## 📝 Why jsPDF-AutoTable Is Superior
+
+jsPDF-AutoTable offers significant advantages over alternative PDF table solutions:
+
+1. **Reliable Table Layout** - Unlike other solutions, tables properly flow across pages, maintaining headers and styling
+2. **No Manual Height Calculations** - Other approaches often require tedious manual calculations to determine where content should break
+3. **Native Text Wrapping** - Text automatically wraps within cells, eliminating common overflow issues
+4. **Proper CJK Support** - When combined with font embedding, handles CJK characters seamlessly
+5. **Consistent Styling** - Maintains consistent styling and formatting throughout multi-page tables
+
+These advantages eliminate many of the strange bugs and issues encountered with alternatives, particularly when dealing with large tables or multilingual content.
+
+## 🔧 Implementation Notes
 
 ### Font Loading Strategy
 
@@ -282,34 +341,31 @@ To ensure proper loading of the PDF.js worker:
    pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
    ```
 
-## 🔧 Troubleshooting
+## 🔍 Troubleshooting Common Issues
 
-### Common Issues
+### Table Pagination Problems
 
-1. **PDF Font Issues**
-   - Make sure the font JavaScript files are correctly imported
-   - Verify the correct font names are used in `setFont` calls
-   - Check for any console errors related to font loading
+If tables aren't paginating properly:
 
-2. **PDF Worker Not Found**
-   - Ensure the PDF.js worker file is in the public directory
-   - Verify the worker path is correctly set in your code
-   - Try using an absolute path if relative paths aren't working
+1. Ensure you're using the correct version of jspdf-autotable (5.0.2+)
+2. Check that you've enabled text wrapping with the `overflow: 'linebreak'` option
+3. Avoid fixed height settings that might conflict with automatic pagination
 
-3. **PDF Generation Performance**
-   - Large tables or complex content may cause performance issues
-   - Consider implementing pagination or chunking for large datasets
-   - Use a loading indicator for PDF generation operations
+### Font Issues
 
-4. **PDF Viewing on Mobile**
-   - Test the zoom-pan-pinch functionality on various devices
-   - Add responsive design considerations for mobile viewports
-   - Ensure touch controls are properly handled
+For font problems:
 
-5. **Multilingual Text Issues**
-   - If CJK characters are not displaying properly, ensure font imports are correct
-   - Check that the font name matches exactly in `setFont` calls
-   - Try using a different encoding if necessary
+1. Verify that font files are properly imported
+2. Check that the font names match exactly in `setFont` calls
+3. Test with simple content first to isolate any issues
+
+### PDF Preview Rendering Issues
+
+If the PDF preview doesn't render correctly:
+
+1. Ensure the PDF worker is correctly loaded
+2. Check browser console for any errors
+3. Try using an absolute path for the worker if relative paths aren't working
 
 ## 📚 Resources
 
@@ -325,14 +381,13 @@ This project is MIT licensed - see the LICENSE file for details.
 
 ## 👉 Next Steps
 
-1. Add better error handling for PDF operations
-2. Implement PDF form filling capabilities
-3. Add PDF annotation features
-4. Create more comprehensive examples for different use cases
-5. Add automated tests for PDF generation and viewing workflows
-6. Support for more complex layouts and styling
-7. Integration with data sources and APIs
-8. PDF password protection and security features
+1. Add form filling capabilities
+2. Support for PDF annotations
+3. Create more comprehensive examples for different use cases
+4. Add automated tests for PDF generation and viewing workflows
+5. Support for more complex layouts and styling
+6. Integration with data sources and APIs
+7. PDF password protection and security features
 
 ## 🙏 Contributions
 
@@ -340,4 +395,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-Built with ❤️ using Next.js 15, React 19, jsPDF, react-pdf, and react-zoom-pan-pinch.
+Built with ❤️ using Next.js 15, React 19, jsPDF, jsPDF-AutoTable, react-pdf, and react-zoom-pan-pinch.
