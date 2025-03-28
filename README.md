@@ -2,6 +2,8 @@
 
 This project provides a comprehensive solution for PDF generation and viewing in web applications using Next.js. It integrates multiple libraries to solve common challenges in client-side PDF handling, including multilingual support, table generation, viewing, and interactive features.
 
+![Screenshot](docs/images/screenshot.png)
+
 ## 🔥 Features
 
 - **PDF Generation** with jsPDF and jsPDF-AutoTable
